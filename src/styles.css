@@ -1,0 +1,126 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.app {
+  max-width: 1280px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.configuration {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+}
+
+h2 {
+  font-size: 20px;
+  text-align: center;
+}
+
+.tree-container {
+  max-width: 400px;
+  margin: 20px 0;
+}
+
+.tree-node {
+  margin: 5px 0;
+  padding: 5px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.tree-node:hover {
+  background-color: #f0f0f0;
+}
+
+.tree-node.selected {
+  background-color: #e0e0ff;
+}
+
+.node-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toggle-btn,
+.edit-btn,
+.delete-btn,
+.add-child-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 5px;
+}
+
+.toggle-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.toggle-spacer {
+  width: 20px;
+}
+
+.node-name {
+  flex-grow: 1;
+  cursor: pointer;
+  padding: 2px 5px;
+}
+
+.node-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.add-child-form {
+  margin: 10px 0 10px 30px;
+  display: flex;
+  gap: 5px;
+}
+
+.add-child-form input {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 3px;
+}
+
+.add-child-form button {
+  padding: 5px 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.add-child-form button:last-child {
+  background-color: #f44336;
+}
+
+.node-info {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border-left: 4px solid #4CAF50;
+}
