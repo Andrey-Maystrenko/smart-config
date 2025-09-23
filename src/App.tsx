@@ -5,7 +5,15 @@ import TreeNodeRBS from './TreeNodeRBS';
 import Connections from './Connections';
 import './styles.css';
 
-const initialDataRBS = {
+
+type BsType = {
+  id: number,
+  name: string,
+  children: BsType[]
+};
+
+
+const initialDataRBS: BsType = {
   id: 1,
   name: 'Reqs',
   children: [
@@ -28,7 +36,7 @@ const initialDataRBS = {
   ]
 };
 
-const initialDataPBS = {
+const initialDataPBS: BsType = {
   id: 1,
   name: 'Product',
   children: [
@@ -51,7 +59,7 @@ const initialDataPBS = {
   ]
 };
 
-const initialDataDBS = {
+const initialDataDBS: BsType = {
   id: 1,
   name: 'Docs',
   children: [
