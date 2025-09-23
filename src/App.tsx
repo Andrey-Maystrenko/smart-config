@@ -201,7 +201,7 @@ const App = () => {
             onSelect={isLinkingMode ? 
               (node) => handleNodeClickInLinkingMode(node, StructureType.RBS) :
               handleNodeSelect}
-            updateTreeRBS={updateTreeRBS}
+            updateTreeXBS={updateTreeRBS}
             selectedNode={selectedNode}
             isLinkingMode={isLinkingMode}
             linkSource={linkSource}
@@ -213,11 +213,12 @@ const App = () => {
           <h2>Product Breakdown Structure</h2>
           <TreeNodePBS
             node={treeDataPBS}
+            prevTree={treeDataPBS}
             level={0}
             onSelect={isLinkingMode ? 
               (node) => handleNodeClickInLinkingMode(node, StructureType.PBS) :
               handleNodeSelect}
-            updateTreePBS={updateTreePBS}
+            updateTreeXBS={updateTreePBS}
             selectedNode={selectedNode}
             isLinkingMode={isLinkingMode}
             linkSource={linkSource}

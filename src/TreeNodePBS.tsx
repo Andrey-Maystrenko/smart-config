@@ -1,23 +1,28 @@
 // import React, { useState } from 'react';
 import React, { useState, useRef, useEffect } from 'react';
+import {TreeNodeProps} from "./types";
 
 
 const TreeNodePBS = ({
   node,
+  prevTree,
   level,
   onSelect,
-  updateTreePBS,
+  updateTreeXBS,
   selectedNode,
   isLinkingMode,
   linkSource,
   updateNodePosition
-}) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(node.name);
-  const [showAddChild, setShowAddChild] = useState(false);
-  const [newChildName, setNewChildName] = useState('');
-  const nodeRef = useRef();
+}: TreeNodeProps) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editName, setEditName] = useState<string>(node.name);
+  const [showAddChild, setShowAddChild] = useState<boolean>(false);
+  const [newChildName, setNewChildName] = useState<string>('');
+
+  // @ts-ignore
+  const nodeRef = useRef<HTMLDivElement>();
+
   // Update node position when component mounts or updates
   useEffect(() => {
     if (nodeRef.current && updateNodePosition) {
@@ -49,14 +54,16 @@ const TreeNodePBS = ({
   const handleSave = () => {
     const updatedNode = { ...node, name: editName };
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
-    updateTreePBS(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
+    let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
+    updateTreeXBS(newTree);
     setIsEditing(false);
     onSelect(updatedNode);
   };
 
   const handleDelete = () => {
     // updateTree(prevTree => deleteNodeFromTree(prevTree, node.id));
-    updateTreePBS(prevTree => deleteNodeFromTree(prevTree, node.id));
+    let newTree = deleteNodeFromTree(prevTree, node.id);
+    updateTreeXBS(newTree);
   };
 
   const handleAddChild = () => {
@@ -74,7 +81,8 @@ const TreeNodePBS = ({
     };
 
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
-    updateTreePBS(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
+    let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
+    updateTreeXBS(newTree);
     setNewChildName('');
     setShowAddChild(false);
     setIsExpanded(true);
@@ -133,7 +141,7 @@ const TreeNodePBS = ({
           />
         ) : (
           <span
-            onClick={isLinkingMode ? undefined : handleSelect}
+            onClick={isLinkingMode ? handleSelect : handleSelect}
             className="node-name"
             style={{
               cursor: isLinkingMode ? 'crosshair' : 'pointer',
@@ -175,12 +183,16 @@ const TreeNodePBS = ({
           {node.children.map(child => (
             <TreeNodePBS
               key={child.id}
+              prevTree={prevTree}
               node={child}
               level={level + 1}
               onSelect={onSelect}
               // updateTree={updateTree}
-              updateTreePBS={updateTreePBS}
+              updateTreeXBS={updateTreeXBS}
               selectedNode={selectedNode}
+              isLinkingMode={isLinkingMode}
+              linkSource={linkSource}
+              updateNodePosition={updateNodePosition}
             />
           ))}
         </div>

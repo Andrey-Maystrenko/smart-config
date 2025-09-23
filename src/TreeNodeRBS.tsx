@@ -1,30 +1,20 @@
 // import React, { useState } from 'react';
 import React, { useState, useRef, useEffect } from 'react';
-import {BsType, LinkedSourceType} from "./App";
+import {BsType} from "./App";
+import {TreeNodeProps} from "./types";
 
-type Props = {
-  node: BsType,
-  prevTree: BsType | null,
-  level: number,
-  onSelect: (node: BsType) => void,
-  updateTreeRBS: (node: BsType) => void,
-  selectedNode: BsType,
-  isLinkingMode: boolean,
-  linkSource: LinkedSourceType,
-  updateNodePosition: (nodeId: number, any) => void
-}
 
 const TreeNodeRBS = ({
   node,
   prevTree,
   level,
   onSelect,
-  updateTreeRBS,
+  updateTreeXBS,
   selectedNode,
   isLinkingMode,
   linkSource,
   updateNodePosition
-}: Props) => {
+}: TreeNodeProps) => {
   const [isExpanded, setIsExpanded] = useState<boolean>(true);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editName, setEditName] = useState<string>(node.name);
@@ -66,7 +56,7 @@ const TreeNodeRBS = ({
     const updatedNode = { ...node, name: editName };
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
     let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
-    updateTreeRBS(newTree);
+    updateTreeXBS(newTree);
     setIsEditing(false);
     onSelect(updatedNode);
   };
@@ -74,7 +64,7 @@ const TreeNodeRBS = ({
   const handleDelete = () => {
     // updateTree(prevTree => deleteNodeFromTree(prevTree, node.id));
     let newTree = deleteNodeFromTree(prevTree, node.id);
-    updateTreeRBS(newTree);
+    updateTreeXBS(newTree);
   };
 
   const handleAddChild = () => {
@@ -93,7 +83,7 @@ const TreeNodeRBS = ({
 
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
     let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
-    updateTreeRBS(newTree);
+    updateTreeXBS(newTree);
     setNewChildName('');
     setShowAddChild(false);
     setIsExpanded(true);
@@ -200,7 +190,7 @@ const TreeNodeRBS = ({
               level={level + 1}
               onSelect={onSelect}
               // updateTree={updateTree}
-              updateTreeRBS={updateTreeRBS}
+              updateTreeXBS={updateTreeXBS}
               selectedNode={selectedNode}
               isLinkingMode={isLinkingMode}
               linkSource={linkSource}
