@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
+
+import React, { useState, useRef, useEffect } from 'react';
 
 const TreeNodeDBS = ({
   node,
   level,
   onSelect,
-  // updateTree,
   updateTreeDBS,
-  selectedNode }) => {
+  selectedNode,
+  isLinkingMode,
+  linkSource,
+  updateNodePosition
+}) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(node.name);
   const [showAddChild, setShowAddChild] = useState(false);
   const [newChildName, setNewChildName] = useState('');
+  const nodeRef = useRef();
+  // Update node position when component mounts or updates
+  useEffect(() => {
+    if (nodeRef.current && updateNodePosition) {
+      const rect = nodeRef.current.getBoundingClientRect();
+      const appRect = document.querySelector('.app').getBoundingClientRect();
+
+      // Calculate position relative to the app container
+      updateNodePosition(node.id, {
+        left: rect.left - appRect.left,
+        top: rect.top - appRect.top,
+        width: rect.width,
+        height: rect.height
+      });
+    }
+  }, [node, updateNodePosition]);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
@@ -86,9 +107,10 @@ const TreeNodeDBS = ({
 
   const isSelected = selectedNode && selectedNode.id === node.id;
 
-  return (
+return (
     <div
-      className={`tree-node ${isSelected ? 'selected' : ''}`}
+      ref={nodeRef}
+      className={`tree-node ${isSelected ? 'selected' : ''} ${isLinkingMode ? 'linking-mode' : ''}`}
       style={{ marginLeft: `${level * 20}px` }}
     >
       <div className="node-header">
@@ -111,8 +133,13 @@ const TreeNodeDBS = ({
           />
         ) : (
           <span
-            onClick={handleSelect}
+            onClick={isLinkingMode ? undefined : handleSelect}
             className="node-name"
+            style={{
+              cursor: isLinkingMode ? 'crosshair' : 'pointer',
+              backgroundColor: isLinkingMode ? '#fffacd' : 'transparent',
+              border: linkSource && linkSource.node && linkSource.node.id === node.id ? '2px solid #007bff' : 'none'
+            }}
           >
             {node.name}
           </span>

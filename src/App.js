@@ -1,31 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import TreeNodePBS from './TreeNodePBS';
 import TreeNodeDBS from './TreeNodeDBS';
 import TreeNodeRBS from './TreeNodeRBS';
+import Connections from './Connections';
 import './styles.css';
-
-// const initialData = {
-//   id: 1,
-//   name: 'Root',
-//   children: [
-//     {
-//       id: 2,
-//       name: 'Child 1',
-//       children: [
-//         {
-//           id: 3,
-//           name: 'Grandchild 1',
-//           children: []
-//         }
-//       ]
-//     },
-//     {
-//       id: 4,
-//       name: 'Child 2',
-//       children: []
-//     }
-//   ]
-// };
 
 const initialDataRBS = {
   id: 1,
@@ -97,20 +75,18 @@ const initialDataDBS = {
 };
 
 const App = () => {
-  // const [treeData, setTreeData] = useState(initialData);
   const [treeDataRBS, setTreeDataRBS] = useState(initialDataRBS);
   const [treeDataPBS, setTreeDataPBS] = useState(initialDataPBS);
   const [treeDataDBS, setTreeDataDBS] = useState(initialDataDBS);
-
   const [selectedNode, setSelectedNode] = useState(null);
+  const [connections, setConnections] = useState([]);
+  const [isLinkingMode, setIsLinkingMode] = useState(false);
+  const [linkSource, setLinkSource] = useState(null);
+  const nodePositions = useRef({});
 
   const handleNodeSelect = (node) => {
     setSelectedNode(node);
   };
-
-  // const updateTree = (newTree) => {
-  //   setTreeData(newTree);
-  // };
 
   const updateTreeRBS = (newTree) => {
     setTreeDataRBS(newTree);
@@ -124,66 +100,127 @@ const App = () => {
     setTreeDataDBS(newTree);
   };
 
+  // Function to update node positions
+  const updateNodePosition = (nodeId, rect) => {
+    nodePositions.current[nodeId] = rect;
+  };
+
+  // Function to handle node click in linking mode
+  const handleNodeClickInLinkingMode = (node, structureType) => {
+    if (!linkSource) {
+      // First node clicked - set as source
+      setLinkSource({ node, structureType });
+    } else {
+      // Second node clicked - create connection
+      if (linkSource.node.id !== node.id && linkSource.structureType !== structureType) {
+        const newConnection = {
+          id: Date.now(),
+          source: { id: linkSource.node.id, type: linkSource.structureType },
+          target: { id: node.id, type: structureType }
+        };
+        
+        setConnections([...connections, newConnection]);
+      }
+      
+      // Reset linking mode
+      setLinkSource(null);
+      setIsLinkingMode(false);
+    }
+  };
+
+  // Function to remove a connection
+  const removeConnection = (connectionId) => {
+    setConnections(connections.filter(conn => conn.id !== connectionId));
+  };
+
+  // Toggle linking mode
+  const toggleLinkingMode = () => {
+    setIsLinkingMode(!isLinkingMode);
+    setLinkSource(null);
+  };
+
   return (
     <div className="app">
       <h1>Configuration Manager</h1>
+      
+      <div className="controls">
+        <button 
+          onClick={toggleLinkingMode} 
+          className={isLinkingMode ? 'linking-active' : ''}
+        >
+          {isLinkingMode ? 'Cancel Linking' : 'Create Links'}
+        </button>
+        
+        {connections.length > 0 && (
+          <div className="connections-list">
+            <h3>Connections:</h3>
+            {connections.map(conn => (
+              <div key={conn.id} className="connection-item">
+                <span>
+                  {conn.source.type} #{conn.source.id} → {conn.target.type} #{conn.target.id}
+                </span>
+                <button onClick={() => removeConnection(conn.id)}>Remove</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
       <div className='configuration'>
         <div className="tree-container">
           <h2>Requirements Breakdown Structure</h2>
           <TreeNodeRBS
             node={treeDataRBS}
-            nodeRBS={treeDataRBS}
             level={0}
-            onSelect={handleNodeSelect}
-            // updateTree={updateTree}
+            onSelect={isLinkingMode ? 
+              (node) => handleNodeClickInLinkingMode(node, 'RBS') : 
+              handleNodeSelect}
             updateTreeRBS={updateTreeRBS}
             selectedNode={selectedNode}
+            isLinkingMode={isLinkingMode}
+            linkSource={linkSource}
+            updateNodePosition={updateNodePosition}
           />
-          {/* {selectedNode && (
-            <div className="node-info">
-              <h3>Selected Node: {selectedNode.name}</h3>
-              <p>ID: {selectedNode.id}</p>
-            </div>
-          )} */}
         </div>
+        
         <div className="tree-container">
           <h2>Product Breakdown Structure</h2>
           <TreeNodePBS
             node={treeDataPBS}
-            nodePBS={treeDataPBS}
             level={0}
-            onSelect={handleNodeSelect}
-            // updateTree={updateTree}
+            onSelect={isLinkingMode ? 
+              (node) => handleNodeClickInLinkingMode(node, 'PBS') : 
+              handleNodeSelect}
             updateTreePBS={updateTreePBS}
             selectedNode={selectedNode}
+            isLinkingMode={isLinkingMode}
+            linkSource={linkSource}
+            updateNodePosition={updateNodePosition}
           />
-          {/* {selectedNode && (
-            <div className="node-info">
-              <h3>Selected Node: {selectedNode.name}</h3>
-              <p>ID: {selectedNode.id}</p>
-            </div>
-          )} */}
         </div>
+        
         <div className="tree-container">
           <h2>Documents Breakdown Structure</h2>
           <TreeNodeDBS
             node={treeDataDBS}
-            nodeDBS={treeDataDBS}
             level={0}
-            onSelect={handleNodeSelect}
-            // updateTree={updateTree}
+            onSelect={isLinkingMode ? 
+              (node) => handleNodeClickInLinkingMode(node, 'DBS') : 
+              handleNodeSelect}
             updateTreeDBS={updateTreeDBS}
             selectedNode={selectedNode}
+            isLinkingMode={isLinkingMode}
+            linkSource={linkSource}
+            updateNodePosition={updateNodePosition}
           />
-          {/* {selectedNode && (
-            <div className="node-info">
-              <h3>Selected Node: {selectedNode.name}</h3>
-              <p>ID: {selectedNode.id}</p>
-            </div>
-          )} */}
         </div>
       </div>
-
+      
+      {/* Connections SVG overlay */}
+      <Connections 
+        connections={connections} 
+        nodePositions={nodePositions.current}
+      />
     </div>
   );
 };
