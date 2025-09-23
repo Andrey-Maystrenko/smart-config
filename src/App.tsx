@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
-import TreeNodePBS from './TreeNodePBS';
-import TreeNodeDBS from './TreeNodeDBS';
-import TreeNodeRBS from './TreeNodeRBS';
+import React, {useState, useRef} from 'react';
+import {TreeNodePBS} from './TreeNodePBS';
+import {TreeNodeDBS} from './TreeNodeDBS';
+import {TreeNodeRBS} from './TreeNodeRBS';
 import Connections from './Connections';
 import './styles.css';
 
@@ -175,20 +175,6 @@ const App = () => {
         >
           {isLinkingMode ? 'Cancel Linking' : 'Create Links'}
         </button>
-        
-        {connections.length > 0 && (
-          <div className="connections-list">
-            <h3>Connections:</h3>
-            {connections.map(conn => (
-              <div key={conn.id} className="connection-item">
-                <span>
-                  {conn.source.type} #{conn.source.id} → {conn.target.type} #{conn.target.id}
-                </span>
-                <button onClick={() => removeConnection(conn.id)}>Remove</button>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
       
       <div className='configuration'>
@@ -243,7 +229,24 @@ const App = () => {
           />
         </div>
       </div>
-      
+
+      <div className="controls">
+        {connections.length > 0 && (
+            <div className="connections-list">
+              <h3>Connections:</h3>
+              {connections.map(conn => (
+                  <div key={conn.id} className="connection-item">
+                <span>
+                  {conn.source.type} #{conn.source.id} → {conn.target.type} #{conn.target.id}
+                </span>
+                    <button onClick={() => removeConnection(conn.id)}>Remove</button>
+                  </div>
+              ))}
+            </div>
+        )}
+      </div>
+
+
       {/* Connections SVG overlay */}
       <Connections 
         connections={connections} 
