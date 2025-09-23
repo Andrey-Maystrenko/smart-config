@@ -30,7 +30,7 @@ const TreeNodeXBS = ({
 
       // Calculate position relative to the app container
       updateNodePosition(node.id, {
-        left: rect.left,// - appRect.left,
+        left: rect.left,// - appRect.left, @TODO: возможно это неверный подбор координаты X
         top: rect.top - appRect.top,
         width: rect.width,
         height: rect.height
@@ -170,6 +170,11 @@ const TreeNodeXBS = ({
             type="text"
             value={newChildName}
             onChange={(e) => setNewChildName(e.target.value)}
+            onKeyPress={(e => {
+                if (e.key === "Enter") { //Enter
+                    handleAddChild();
+                }
+            })}
             placeholder="Child node name"
           />
           <button onClick={handleAddChild}>Add</button>
