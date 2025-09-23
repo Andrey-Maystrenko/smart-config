@@ -4,30 +4,7 @@ import {TreeNodeDBS} from './TreeNodeDBS';
 import {TreeNodeRBS} from './TreeNodeRBS';
 import Connections from './Connections';
 import './styles.css';
-
-
-type BsType = {
-  id: any,
-  name: string,
-  children: BsType[]
-};
-
-enum StructureType {
-  RBS = "RBS",
-  PBS = "PBS",
-  DBS = "DBS"
-}
-
-type LinkedSourceType = {
-  node: BsType,
-  structureType: StructureType
-}
-
-type ConnectionType = {
-  id: any,
-  source: {id: any, type: StructureType},
-  target: {id: any, type: StructureType}
-}
+import {BsType, ConnectionType, LinkedSourceType, StructureType} from "./types";
 
 
 const initialDataRBS: BsType = {
@@ -35,18 +12,18 @@ const initialDataRBS: BsType = {
   name: 'Reqs',
   children: [
     {
-      id: "rbs-2",
+      id: "rbs-1",
       name: 'Req 1',
       children: [
         {
-          id: "rbs-3",
+          id: "rbs-2",
           name: 'Req 2',
           children: []
         }
       ]
     },
     {
-      id: 4,
+      id: "rbs-3",
       name: 'Req 3',
       children: []
     }
@@ -126,7 +103,7 @@ const App = () => {
   };
 
   // Function to update node positions
-  const updateNodePosition = (nodeId: number, rect) => {
+  const updateNodePosition = (nodeId: any, rect) => {
     nodePositions.current[nodeId] = rect;
   };
 
@@ -257,4 +234,3 @@ const App = () => {
 };
 
 export default App;
-export {BsType, LinkedSourceType};

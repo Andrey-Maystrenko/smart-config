@@ -1,7 +1,5 @@
-// import React, { useState } from 'react';
-import React, { useState, useRef, useEffect } from 'react';
-import {BsType} from "./App";
-import {TreeNodeProps} from "./types";
+import React, {useState, useRef, useEffect} from 'react';
+import {TreeNodeProps, BsType} from "./types";
 
 
 const TreeNodeXBS = ({
@@ -32,7 +30,7 @@ const TreeNodeXBS = ({
 
       // Calculate position relative to the app container
       updateNodePosition(node.id, {
-        left: rect.left - appRect.left,
+        left: rect.left,// - appRect.left,
         top: rect.top - appRect.top,
         width: rect.width,
         height: rect.height
@@ -119,17 +117,16 @@ const TreeNodeXBS = ({
 
   return (
     <div
-      ref={nodeRef}
       className={`tree-node ${isSelected ? 'selected' : ''} ${isLinkingMode ? 'linking-mode' : ''}`}
       style={{ marginLeft: `${level * 20}px` }}
     >
-      <div className="node-header">
+      <div className="node-header" ref={nodeRef}>
         {node.children.length > 0 ? (
-          <button onClick={handleToggle} className="toggle-btn">
+          <button onClick={handleToggle} className="toggle-btn targetArrow">
             {isExpanded ? '−' : '+'}
           </button>
         ) : (
-          <span className="toggle-spacer"></span>
+          <span className="toggle-spacer targetArrow"></span>
         )}
 
         {isEditing ? (
