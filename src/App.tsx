@@ -230,11 +230,12 @@ const App = () => {
           <h2>Documents Breakdown Structure</h2>
           <TreeNodeDBS
             node={treeDataDBS}
+            prevTree={treeDataDBS}
             level={0}
             onSelect={isLinkingMode ? 
               (node) => handleNodeClickInLinkingMode(node, StructureType.DBS) :
               handleNodeSelect}
-            updateTreeDBS={updateTreeDBS}
+            updateTreeXBS={updateTreeDBS}
             selectedNode={selectedNode}
             isLinkingMode={isLinkingMode}
             linkSource={linkSource}
