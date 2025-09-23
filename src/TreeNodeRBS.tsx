@@ -1,9 +1,22 @@
 // import React, { useState } from 'react';
 import React, { useState, useRef, useEffect } from 'react';
+import {BsType, LinkedSourceType} from "./App";
 
+type Props = {
+  node: BsType,
+  prevTree: BsType | null,
+  level: number,
+  onSelect: (node: BsType) => void,
+  updateTreeRBS: (node: BsType) => void,
+  selectedNode: BsType,
+  isLinkingMode: boolean,
+  linkSource: LinkedSourceType,
+  updateNodePosition: (nodeId: number, any) => void
+}
 
 const TreeNodeRBS = ({
   node,
+  prevTree,
   level,
   onSelect,
   updateTreeRBS,
@@ -11,13 +24,16 @@ const TreeNodeRBS = ({
   isLinkingMode,
   linkSource,
   updateNodePosition
-}) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(node.name);
-  const [showAddChild, setShowAddChild] = useState(false);
-  const [newChildName, setNewChildName] = useState('');
-  const nodeRef = useRef();
+}: Props) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editName, setEditName] = useState<string>(node.name);
+  const [showAddChild, setShowAddChild] = useState<boolean>(false);
+  const [newChildName, setNewChildName] = useState<string>('');
+
+  // @ts-ignore
+  const nodeRef = useRef<HTMLDivElement>();
+
   // Update node position when component mounts or updates
   useEffect(() => {
     if (nodeRef.current && updateNodePosition) {
@@ -49,14 +65,16 @@ const TreeNodeRBS = ({
   const handleSave = () => {
     const updatedNode = { ...node, name: editName };
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
-    updateTreeRBS(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
+    let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
+    updateTreeRBS(newTree);
     setIsEditing(false);
     onSelect(updatedNode);
   };
 
   const handleDelete = () => {
     // updateTree(prevTree => deleteNodeFromTree(prevTree, node.id));
-    updateTreeRBS(prevTree => deleteNodeFromTree(prevTree, node.id));
+    let newTree = deleteNodeFromTree(prevTree, node.id);
+    updateTreeRBS(newTree);
   };
 
   const handleAddChild = () => {
@@ -74,13 +92,14 @@ const TreeNodeRBS = ({
     };
 
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
-    updateTreeRBS(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
+    let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
+    updateTreeRBS(newTree);
     setNewChildName('');
     setShowAddChild(false);
     setIsExpanded(true);
   };
 
-  const updateNodeInTree = (currentNode, id, updatedNode) => {
+  const updateNodeInTree = (currentNode: BsType, id: number, updatedNode: BsType) => {
     if (currentNode.id === id) {
       return updatedNode;
     }
@@ -88,11 +107,12 @@ const TreeNodeRBS = ({
     return {
       ...currentNode,
       children: currentNode.children.map(child =>
-        updateNodeInTree(child, id, updatedNode))
+        updateNodeInTree(child, id, updatedNode)
+      )
     };
   };
 
-  const deleteNodeFromTree = (currentNode, id) => {
+  const deleteNodeFromTree = (currentNode: BsType, id: number) => {
     if (currentNode.id === id) {
       return null;
     }
@@ -133,7 +153,7 @@ const TreeNodeRBS = ({
           />
         ) : (
           <span
-            onClick={isLinkingMode ? undefined : handleSelect}
+            onClick={isLinkingMode ? handleSelect : handleSelect}
             className="node-name"
             style={{
               cursor: isLinkingMode ? 'crosshair' : 'pointer',
@@ -176,11 +196,15 @@ const TreeNodeRBS = ({
             <TreeNodeRBS
               key={child.id}
               node={child}
+              prevTree={prevTree}
               level={level + 1}
               onSelect={onSelect}
               // updateTree={updateTree}
               updateTreeRBS={updateTreeRBS}
               selectedNode={selectedNode}
+              isLinkingMode={isLinkingMode}
+              linkSource={linkSource}
+              updateNodePosition={updateNodePosition}
             />
           ))}
         </div>

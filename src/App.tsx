@@ -7,22 +7,39 @@ import './styles.css';
 
 
 type BsType = {
-  id: number,
+  id: any,
   name: string,
   children: BsType[]
 };
 
+enum StructureType {
+  RBS = "RBS",
+  PBS = "PBS",
+  DBS = "DBS"
+}
+
+type LinkedSourceType = {
+  node: BsType,
+  structureType: StructureType
+}
+
+type ConnectionType = {
+  id: any,
+  source: {id: any, type: StructureType},
+  target: {id: any, type: StructureType}
+}
+
 
 const initialDataRBS: BsType = {
-  id: 1,
+  id: "rbs",
   name: 'Reqs',
   children: [
     {
-      id: 2,
+      id: "rbs-2",
       name: 'Req 1',
       children: [
         {
-          id: 3,
+          id: "rbs-3",
           name: 'Req 2',
           children: []
         }
@@ -37,22 +54,22 @@ const initialDataRBS: BsType = {
 };
 
 const initialDataPBS: BsType = {
-  id: 1,
+  id: "pbs",
   name: 'Product',
   children: [
     {
-      id: 2,
+      id: "pbs-1",
       name: 'Part 1',
       children: [
         {
-          id: 3,
+          id: "pbs-2",
           name: 'Part 2',
           children: []
         }
       ]
     },
     {
-      id: 4,
+      id: "pbs-3",
       name: 'Part 3',
       children: []
     }
@@ -60,22 +77,22 @@ const initialDataPBS: BsType = {
 };
 
 const initialDataDBS: BsType = {
-  id: 1,
+  id: "dbs",
   name: 'Docs',
   children: [
     {
-      id: 2,
+      id: "dbs-1",
       name: 'Doc 1',
       children: [
         {
-          id: 3,
+          id: "dbs-2",
           name: 'Doc 2',
           children: []
         }
       ]
     },
     {
-      id: 4,
+      id: "dbs-3",
       name: 'Doc 3',
       children: []
     }
@@ -83,20 +100,20 @@ const initialDataDBS: BsType = {
 };
 
 const App = () => {
-  const [treeDataRBS, setTreeDataRBS] = useState(initialDataRBS);
+  const [treeDataRBS, setTreeDataRBS] = useState<BsType>(initialDataRBS);
   const [treeDataPBS, setTreeDataPBS] = useState(initialDataPBS);
   const [treeDataDBS, setTreeDataDBS] = useState(initialDataDBS);
-  const [selectedNode, setSelectedNode] = useState(null);
-  const [connections, setConnections] = useState([]);
-  const [isLinkingMode, setIsLinkingMode] = useState(false);
-  const [linkSource, setLinkSource] = useState(null);
+  const [selectedNode, setSelectedNode] = useState<BsType>(null);
+  const [connections, setConnections] = useState<ConnectionType[]>([]);
+  const [isLinkingMode, setIsLinkingMode] = useState<boolean>(false);
+  const [linkSource, setLinkSource] = useState<LinkedSourceType | null>(null);
   const nodePositions = useRef({});
 
-  const handleNodeSelect = (node) => {
+  const handleNodeSelect = (node: BsType) => {
     setSelectedNode(node);
   };
 
-  const updateTreeRBS = (newTree) => {
+  const updateTreeRBS = (newTree: BsType) => {
     setTreeDataRBS(newTree);
   };
 
@@ -109,19 +126,19 @@ const App = () => {
   };
 
   // Function to update node positions
-  const updateNodePosition = (nodeId, rect) => {
+  const updateNodePosition = (nodeId: number, rect) => {
     nodePositions.current[nodeId] = rect;
   };
 
   // Function to handle node click in linking mode
-  const handleNodeClickInLinkingMode = (node, structureType) => {
+  const handleNodeClickInLinkingMode = (node: BsType, structureType: StructureType) => {
     if (!linkSource) {
       // First node clicked - set as source
       setLinkSource({ node, structureType });
     } else {
       // Second node clicked - create connection
       if (linkSource.node.id !== node.id && linkSource.structureType !== structureType) {
-        const newConnection = {
+        const newConnection: ConnectionType = {
           id: Date.now(),
           source: { id: linkSource.node.id, type: linkSource.structureType },
           target: { id: node.id, type: structureType }
@@ -143,7 +160,7 @@ const App = () => {
 
   // Toggle linking mode
   const toggleLinkingMode = () => {
-    setIsLinkingMode(!isLinkingMode);
+    setIsLinkingMode((currLinkingMode) => !currLinkingMode);
     setLinkSource(null);
   };
 
@@ -179,9 +196,10 @@ const App = () => {
           <h2>Requirements Breakdown Structure</h2>
           <TreeNodeRBS
             node={treeDataRBS}
+            prevTree={treeDataRBS}
             level={0}
             onSelect={isLinkingMode ? 
-              (node) => handleNodeClickInLinkingMode(node, 'RBS') : 
+              (node) => handleNodeClickInLinkingMode(node, StructureType.RBS) :
               handleNodeSelect}
             updateTreeRBS={updateTreeRBS}
             selectedNode={selectedNode}
@@ -197,7 +215,7 @@ const App = () => {
             node={treeDataPBS}
             level={0}
             onSelect={isLinkingMode ? 
-              (node) => handleNodeClickInLinkingMode(node, 'PBS') : 
+              (node) => handleNodeClickInLinkingMode(node, StructureType.PBS) :
               handleNodeSelect}
             updateTreePBS={updateTreePBS}
             selectedNode={selectedNode}
@@ -213,7 +231,7 @@ const App = () => {
             node={treeDataDBS}
             level={0}
             onSelect={isLinkingMode ? 
-              (node) => handleNodeClickInLinkingMode(node, 'DBS') : 
+              (node) => handleNodeClickInLinkingMode(node, StructureType.DBS) :
               handleNodeSelect}
             updateTreeDBS={updateTreeDBS}
             selectedNode={selectedNode}
@@ -234,3 +252,4 @@ const App = () => {
 };
 
 export default App;
+export {BsType, LinkedSourceType};
