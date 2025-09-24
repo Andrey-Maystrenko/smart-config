@@ -1,23 +1,27 @@
-// import React, { useState } from 'react';
-import React, { useState, useRef, useEffect } from 'react';
+import React, {useState, useRef, useEffect} from 'react';
+import {TreeNodeProps, BsType} from "./types";
 
 
-const TreeNodePBS = ({
+const TreeNodeXBS = ({
   node,
+  prevTree,
   level,
   onSelect,
-  updateTreePBS,
+  updateTreeXBS,
   selectedNode,
   isLinkingMode,
   linkSource,
   updateNodePosition
-}) => {
-  const [isExpanded, setIsExpanded] = useState(true);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editName, setEditName] = useState(node.name);
-  const [showAddChild, setShowAddChild] = useState(false);
-  const [newChildName, setNewChildName] = useState('');
-  const nodeRef = useRef();
+}: TreeNodeProps) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editName, setEditName] = useState<string>(node.name);
+  const [showAddChild, setShowAddChild] = useState<boolean>(false);
+  const [newChildName, setNewChildName] = useState<string>('');
+
+  // @ts-ignore
+  const nodeRef = useRef<HTMLDivElement>();
+
   // Update node position when component mounts or updates
   useEffect(() => {
     if (nodeRef.current && updateNodePosition) {
@@ -26,7 +30,7 @@ const TreeNodePBS = ({
 
       // Calculate position relative to the app container
       updateNodePosition(node.id, {
-        left: rect.left - appRect.left,
+        left: rect.left,// - appRect.left, @TODO: возможно это неверный подбор координаты X
         top: rect.top - appRect.top,
         width: rect.width,
         height: rect.height
@@ -49,14 +53,16 @@ const TreeNodePBS = ({
   const handleSave = () => {
     const updatedNode = { ...node, name: editName };
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
-    updateTreePBS(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
+    let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
+    updateTreeXBS(newTree);
     setIsEditing(false);
     onSelect(updatedNode);
   };
 
   const handleDelete = () => {
     // updateTree(prevTree => deleteNodeFromTree(prevTree, node.id));
-    updateTreePBS(prevTree => deleteNodeFromTree(prevTree, node.id));
+    let newTree = deleteNodeFromTree(prevTree, node.id);
+    updateTreeXBS(newTree);
   };
 
   const handleAddChild = () => {
@@ -74,13 +80,14 @@ const TreeNodePBS = ({
     };
 
     // updateTree(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
-    updateTreePBS(prevTree => updateNodeInTree(prevTree, node.id, updatedNode));
+    let newTree = updateNodeInTree(prevTree, node.id, updatedNode);
+    updateTreeXBS(newTree);
     setNewChildName('');
     setShowAddChild(false);
     setIsExpanded(true);
   };
 
-  const updateNodeInTree = (currentNode, id, updatedNode) => {
+  const updateNodeInTree = (currentNode: BsType, id: number, updatedNode: BsType) => {
     if (currentNode.id === id) {
       return updatedNode;
     }
@@ -88,11 +95,12 @@ const TreeNodePBS = ({
     return {
       ...currentNode,
       children: currentNode.children.map(child =>
-        updateNodeInTree(child, id, updatedNode))
+        updateNodeInTree(child, id, updatedNode)
+      )
     };
   };
 
-  const deleteNodeFromTree = (currentNode, id) => {
+  const deleteNodeFromTree = (currentNode: BsType, id: number) => {
     if (currentNode.id === id) {
       return null;
     }
@@ -109,17 +117,16 @@ const TreeNodePBS = ({
 
   return (
     <div
-      ref={nodeRef}
       className={`tree-node ${isSelected ? 'selected' : ''} ${isLinkingMode ? 'linking-mode' : ''}`}
       style={{ marginLeft: `${level * 20}px` }}
     >
-      <div className="node-header">
+      <div className="node-header" ref={nodeRef}>
         {node.children.length > 0 ? (
-          <button onClick={handleToggle} className="toggle-btn">
+          <button onClick={handleToggle} className="toggle-btn targetArrow">
             {isExpanded ? '−' : '+'}
           </button>
         ) : (
-          <span className="toggle-spacer"></span>
+          <span className="toggle-spacer targetArrow"></span>
         )}
 
         {isEditing ? (
@@ -133,7 +140,7 @@ const TreeNodePBS = ({
           />
         ) : (
           <span
-            onClick={isLinkingMode ? undefined : handleSelect}
+            onClick={isLinkingMode ? handleSelect : handleSelect}
             className="node-name"
             style={{
               cursor: isLinkingMode ? 'crosshair' : 'pointer',
@@ -163,6 +170,11 @@ const TreeNodePBS = ({
             type="text"
             value={newChildName}
             onChange={(e) => setNewChildName(e.target.value)}
+            onKeyPress={(e => {
+                if (e.key === "Enter") { //Enter
+                    handleAddChild();
+                }
+            })}
             placeholder="Child node name"
           />
           <button onClick={handleAddChild}>Add</button>
@@ -173,14 +185,18 @@ const TreeNodePBS = ({
       {isExpanded && node.children.length > 0 && (
         <div className="children">
           {node.children.map(child => (
-            <TreeNodePBS
+            <TreeNodeXBS
               key={child.id}
               node={child}
+              prevTree={prevTree}
               level={level + 1}
               onSelect={onSelect}
               // updateTree={updateTree}
-              updateTreePBS={updateTreePBS}
+              updateTreeXBS={updateTreeXBS}
               selectedNode={selectedNode}
+              isLinkingMode={isLinkingMode}
+              linkSource={linkSource}
+              updateNodePosition={updateNodePosition}
             />
           ))}
         </div>
@@ -189,4 +205,4 @@ const TreeNodePBS = ({
   );
 };
 
-export default TreeNodePBS;
+export default TreeNodeXBS;

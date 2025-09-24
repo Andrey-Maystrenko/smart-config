@@ -20,7 +20,7 @@ const Connections = ({ connections, nodePositions }) => {
     window.addEventListener('resize', updateSize);
     
     return () => window.removeEventListener('resize', updateSize);
-  }, []);
+  }, [nodePositions]);
 
   // Calculate connection paths
   const getConnectionPath = (connection) => {
@@ -34,9 +34,9 @@ const Connections = ({ connections, nodePositions }) => {
     
     // Calculate center points of nodes
     const sourceX = sourcePos.left + sourcePos.width / 2;
-    const sourceY = sourcePos.top + sourcePos.height / 2;
+    const sourceY = sourcePos.top + sourcePos.height / 2 + 5;
     const targetX = targetPos.left + targetPos.width / 2;
-    const targetY = targetPos.top + targetPos.height / 2;
+    const targetY = targetPos.top + targetPos.height / 2 + 5;
     
     // Create a curved path
     const dx = targetX - sourceX;
